@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday thangooo ❤️</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    color: white;
+    text-align: center;
+    background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #ff4d6d);
+    background-size: 400% 400%;
+    animation: bgMove 12s ease infinite;
+}
+
+@keyframes bgMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+/* 💕 Floating Hearts */
+.hearts span {
+    position: absolute;
+    display: block;
+    width: 20px;
+    height: 20px;
+    background: #ff4d6d;
+    transform: rotate(45deg);
+    animation: float 10s linear infinite;
+    opacity: 0.7;
+}
+
+.hearts span::before,
+.hearts span::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #ff4d6d;
+    border-radius: 50%;
+}
+
+.hearts span::before { top: -10px; left: 0; }
+.hearts span::after { left: -10px; top: 0; }
+
+@keyframes float {
+    0% {transform: translateY(100vh) rotate(45deg); opacity: 0;}
+    20% {opacity: 1;}
+    100% {transform: translateY(-10vh) rotate(45deg); opacity: 0;}
+}
+
+/* Content */
+.container {
+    position: relative;
+    z-index: 2;
+    top: 20vh;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2.3rem;
+}
+
+#message {
+    margin: 20px 0;
+    font-size: 1.1rem;
+    min-height: 100px;
+    line-height: 1.5;
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    background: white;
+    color: #ff4d6d;
+    cursor: pointer;
+    margin: 8px;
+}
+
+/* Canvas */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+@media (max-width: 600px) {
+    h1 { font-size: 1.8rem; }
+    #message { font-size: 1rem; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- 💕 Hearts -->
+<div class="hearts" id="hearts"></div>
+
+<!-- 🎆 Fireworks + Confetti -->
+<canvas id="canvas"></canvas>
+
+<div class="container">
+    <h1>🎉 Happy Birthday thangooo 🎉</h1>
+    <div id="message"></div>
+
+    <button onclick="start()">Start Surprise ❤️</button>
+    <button onclick="toggleMusic()">Music 🎶</button>
+</div>
+
+<audio id="music" loop>
+    <source src="your-music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+// 💕 Create Hearts
+const heartsContainer = document.getElementById("hearts");
+for (let i = 0; i < 25; i++) {
+    let heart = document.createElement("span");
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.animationDuration = (5 + Math.random()*5) + "s";
+    heartsContainer.appendChild(heart);
+}
+
+// 🎆 Canvas Setup
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+// Firework particles
+function createFirework(x, y) {
+    for (let i = 0; i < 50; i++) {
+        particles.push({
+            x, y,
+            angle: Math.random() * 2 * Math.PI,
+            speed: Math.random() * 5 + 2,
+            life: 100,
+            type: "firework"
+        });
+    }
+}
+
+// Confetti particles
+function createConfetti() {
+    for (let i = 0; i < 100; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height - canvas.height,
+            size: Math.random() * 6 + 3,
+            speed: Math.random() * 3 + 2,
+            color: `hsl(${Math.random()*360},100%,50%)`,
+            type: "confetti"
+        });
+    }
+}
+
+// Animate
+function animate() {
+    ctx.fillStyle = "rgba(0,0,0,0.2)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach((p, i) => {
+        if (p.type === "firework") {
+            p.x += Math.cos(p.angle) * p.speed;
+            p.y += Math.sin(p.angle) * p.speed;
+            p.life--;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 2, 0, Math.PI*2);
+            ctx.fillStyle = "hsl(" + Math.random()*360 + ",100%,60%)";
+            ctx.fill();
+
+            if (p.life <= 0) particles.splice(i,1);
+        } else {
+            p.y += p.speed;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x, p.y, p.size, p.size);
+
+            if (p.y > canvas.height) p.y = -10;
+        }
+    });
+
+    requestAnimationFrame(animate);
+}
+
+// ⌨️ Typing Message
+const text = `Dear Bairavan 💖,
+
+You are my smile, my happiness, my lovable life partner and everything.
+Every moment with you feels so special and beautiful.
+
+On your birthday, I wish you endless joy,
+success, and love that never fades.
+
+i miss you lots my dear.
+
+I am so lucky to have you in my life ❤️
+Happy Birthday once again 🎉`;
+
+let i = 0;
+function typeMessage() {
+    if (i < text.length) {
+        document.getElementById("message").innerHTML += text.charAt(i);
+        i++;
+        setTimeout(typeMessage, 40);
+    }
+}
+
+// 🎉 Start All
+function start() {
+    createConfetti();
+    animate();
+
+    setInterval(() => {
+        createFirework(Math.random()*canvas.width, Math.random()*canvas.height/2);
+    }, 800);
+
+    typeMessage();
+}
+
+// 🎶 Music
+const music = document.getElementById("music");
+function toggleMusic() {
+    if (music.paused) music.play();
+    else music.pause();
+}
+</script>
+
+</body>
+</html>
